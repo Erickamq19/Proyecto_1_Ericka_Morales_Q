@@ -1,0 +1,53 @@
+﻿
+@{
+    ViewBag.Title = "Registro";
+}
+
+<h3>Registro</h3>
+<main>
+    <div class="container mt-5">
+        <div class="row  justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h2>Registrar nueva cuenta</h2>
+                    </div>
+
+                    <div class="card-body">
+                        @if (ViewBag.Error != null)
+                        {
+                            <div class="alert alert-danger" role="alert">
+                                @ViewBag.Error
+                            </div>
+                        }
+
+                        @using (Html.BeginForm("Registro", "Inicio_sesion", FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            <div class="form-group mb-3">
+
+                                <label for="Nombre_usuario">Nombre completo:</label>
+                                <input type="text" id="Nombre_usuario" name="Nombre_usuario" class="form-control" maxlength="100" required />
+                                <br />
+                                <label for="Email">Correo electrónico:</label>
+                                <input type="email" id="Email" name="Email" class="form-control" maxlength="150" required />
+                                <br />
+                                <label for="Contrasena">Contraseña:</label>
+                                <input type="password" id="Contrasena" name="Contrasena" class="form-control" minlength="8" required/>
+                                <br />
+                                <label for="C_contrasena">Confirmar contraseña: </label>
+                                <input type="password" id="C_contrasena" name="C_contrasena" class="form-control" minlength="8" required/>
+                                <br />
+
+                                <button type="submit" class="btn btn-primary" >Registrarse</button>
+
+                            </div>
+
+                        }
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

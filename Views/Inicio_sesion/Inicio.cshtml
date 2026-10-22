@@ -1,0 +1,53 @@
+﻿
+@{
+    ViewBag.Title = "Inicio";
+}
+
+<h2>Inicio</h2>
+<main>
+    <div class="container mt-5">
+        <div class="row  justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h2>Inicio de sesión</h2>
+                    </div>
+
+                    <div class="card-body">
+                        @if (ViewBag.Error != null)
+                        {
+                            <div class="alert alert-danger" role="alert">
+                                @ViewBag.Error
+                            </div>
+                        }
+
+                        @using (Html.BeginForm("Inicio", "Inicio_sesion", FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            <div class="form-group mb-3">
+
+                                <label for="Email">Correo electrónico:</label>
+                                <input type="email" id="Email" name="Email" class="form-control" maxlength="150" required />
+                                <br />
+                                <label for="Contrasena">Contraseña:</label>
+                                <input type="password" id="Contrasena" name="Contrasena" class="form-control" minlength="8" required />
+                                <br />
+
+                                <button type="submit" class="btn btn-primary w-100">Iniciar</button>
+
+                            </div>
+
+                        }
+                    </div>
+
+                    <hr />
+                    <p class="text-center">Registrarse  @Html.ActionLink("Cree su cuenta", "Registro", "Inicio_sesion")</p>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+

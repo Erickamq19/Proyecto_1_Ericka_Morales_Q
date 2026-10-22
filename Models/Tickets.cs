@@ -16,5 +16,6 @@ namespace Proyecto_1_Ericka_Morales_Q.Models
         public DateTime F_creacion { get; set; }
         public DateTime? F_actu { get; set; }
         public string Categoria { get; set; }
+        public string N_Estado { get; set; }
     }
 }

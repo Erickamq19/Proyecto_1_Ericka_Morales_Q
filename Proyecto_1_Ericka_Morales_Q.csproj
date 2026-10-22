@@ -129,7 +129,8 @@
     <Compile Include="Conexion_DB\registro_tickets.cs" />
     <Compile Include="Conexion_DB\registro_usuario.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\Logica_Tickets.cs" />
+    <Compile Include="Controllers\Inicio_sesionController.cs" />
+    <Compile Include="Controllers\Logica_TicketsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -192,10 +193,12 @@
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Inicio_sesion\Inicio.cshtml" />
+    <Content Include="Views\Inicio_sesion\Registro.cshtml" />
+    <Content Include="Views\Logica_Tickets\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\Logica_Tickets\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />

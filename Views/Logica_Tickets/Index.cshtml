@@ -1,0 +1,281 @@
+﻿@model List<Proyecto_1_Ericka_Morales_Q.Models.Tickets>
+
+@{
+    ViewBag.Title = "Mis Tickets";
+}
+
+<h3>Gestión de tickets</h3>
+<main>
+    
+    <div class="container mt-4">
+        <h2>Mis Tickets</h2>
+        <br />
+        <div class="mb-4">
+            <h2>Realizar nuevo ticket</h2>
+            <form id="Formulario_ticket">
+                @Html.AntiForgeryToken()
+
+                <label for="Titulo">Título:</label>
+                <input type="text" id="Titulo" name="Titulo" class="form-control" maxlength="100" required />
+                <br />
+                <label for="Descripcion">Descripción del ticket:</label>
+                <input type="text" id="Descripcion" name="Descripcion" class="form-control" maxlength="150" required />
+                <br />
+                <label for="Categoria">Categoría:</label>
+                <select id="Categoria" name="Categoria" class="form-control" required>
+                    <option value="Software">Software</option>
+                    <option value="Redes">Redes</option>
+                    <option value="Hardware">Hardware</option>
+                    <option value="Acceso">Acceso</option>
+                    <option value="Licencias">Licencias</option>
+                    <option value="Otros">Otros</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Registrar</button>
+
+            </form>
+            <p id="mensaje_sistema" role="status" class="mt-2"></p>
+        </div>
+        <hr />
+        <div class="mb-4">
+            <h2>Tickets registrados</h2>
+            <label for="Filtro">Filtrar por estado</label>
+            <select id="Filtro" class="form-control">
+                <option value="">Todos los estados</option>
+                <option value="Abierto">Abierto</option>
+                <option value="En Proceso">En Proceso</option>
+                <option value="Cerrado">Cerrado</option>
+                <option value="Resuelto">Resuelto</option>
+            </select>
+
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Título</th>
+                            <th>Categoría</th>
+                            <th>Fecha de creación</th>
+                            <th>Estado</th>
+                            <th>Comentarios</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla_T">
+                        @if (Model != null && Model.Count > 0) 
+                        { 
+                            foreach (var ticket in Model) 
+                            { 
+                                <tr data-estado="@ticket.N_Estado">
+                                    <td>@ticket.Id</td>
+                                    <td>@ticket.Titulo</td>
+                                    <td>@ticket.Categoria</td>
+                                    <td>@ticket.F_creacion.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td>@ticket.N_Estado</td>
+                                    <td>
+                                        <button type="button" class="btn btn-info btn-sm btnComentarios" data-id="@ticket.Id">Ver comentarios</button>
+                                    </td>
+                                </tr>
+
+                            }
+                        
+                        }
+                        else 
+                        { 
+                            <tr>
+                                <td colspan="6" class="text-center">
+                                    Todavía no hay ticktes registrados
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div id="apartado_comentarios" class="mb-4" style="display:none;"> 
+            <h2>Sección de comentarios <span id="Id_CT"></span></h2>
+            <div id="lista_Comns" class="mb-3"></div>
+            <form id="Formulario_cometarios">
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="Id_CT_seleccionado"/>
+                <label for="TextoComentario">Nuevo comentario</label>
+                <textarea id="TextoComentario" class="form-control" rows="5" maxlength="2000" required></textarea>
+                <button type="submit" class="btn btn-primary">Guardar comentario</button>
+                <button type="button" id="cancelar_coms" class="btn btn-secondary">Cancelar</button>
+            </form>
+            <p id="mensaje_coms" role="status" class="mt-2"></p>
+        </div>
+    </div>
+
+</main>
+
+@section scripts{
+    <script>
+
+        $("#Formulario_ticket").on("submit", function (e) {
+            e.preventDefault();
+            var formulario = $(this);
+            var mensaje = $("#mensaje_sistema");
+            mensaje.text("Cargando tickets...");
+
+            $.ajax({
+                url: '@Url.Action("registrar_ticket", "Logica_Tickets")',
+                type: "POST",
+                data: formulario.serialize(),
+
+                success: function (respuesta) {
+                    if (!respuesta.exito) {
+                        mensaje.text(respuesta.mensaje);
+                        return;
+                    }
+
+                    $("#tabla_T").empty();
+                    $.each(respuesta.tickets, function (i, ticket) {
+                        var fila = $("<tr>").attr("data-estado", ticket.Estado);
+
+                        $("<td>").text(ticket.Id).appendTo(fila);
+                        $("<td>").text(ticket.Titulo).appendTo(fila);
+                        $("<td>").text(ticket.Categoria).appendTo(fila);
+                        $("<td>").text(ticket.Fecha).appendTo(fila);
+                        $("<td>").text(ticket.Estado).appendTo(fila);
+
+                        var boton = $("<button>", {
+                            type: "button",
+                            class: "btn btn-info btn-sm btnComentarios",
+                            text: "Ver comentarios"
+
+                        }).attr("data-id", ticket.Id);
+                        $("<td>").append(boton).appendTo(fila);
+                        $("#tabla_T").append(fila);
+                    });
+                    formulario[0].reset();
+                    $("#Filtro").val("");
+                    mensaje.text(respuesta.mensaje);
+                },
+                error: function (xhr)
+                {
+                    if (xhr.status === 400) {
+                        mensaje.text("Estimado usuario, su solicitud no es válida.");
+                    } else if (xhr.status === 401) {
+                        mensaje.text("Estimado usuario, su su sesión ha expirado. Debe iniciar sesión nuevamente");
+
+                    } else
+                    {
+                        mensaje.text("No se logró completar la operación, intentelo nuevamente.");
+                    }
+                }
+            });
+        });
+
+        $("#Filtro").on("change", function () {
+            var estado_seleccionado = $(this).val();
+            $("#tabla_T tr[data-estado]").each(function () {
+                var estado_ticket = $(this).attr("data-estado");
+                $(this).toggle(estado_seleccionado === "" || estado_ticket === estado_seleccionado);
+            });
+        });
+
+        $(document).on("click", ".btnComentarios", function () {
+            var idTicket = $(this).attr("data-id");
+            $("#Id_CT").text("#" + idTicket);
+            $("#Id_CT_seleccionado").val(idTicket);
+            $("#apartado_comentarios").show();
+            $("#lista_Comns").empty();
+            $("#mensaje_coms").text("Cargando comentarios...");
+
+            $.ajax({
+                url: '@Url.Action("comentarios_mostrar", "Logica_Tickets")',
+                type: "GET",
+                data: { IdTicket: idTicket },
+
+                success: function (respuesta) {
+                    $("#lista_Comns").empty();
+                    $("#mensaje_coms").text("");
+
+                    if (!respuesta || respuesta.length === 0) {
+                        $("#lista_Comns").text("Este ticket no tiene comentarios");
+                        return;
+                    }
+                    $.each(respuesta, function (i, comentario) {
+                        var bloque = $("<div>").addClass("mb-3");
+                        var fecha = new Date(comentario.Fecha);
+
+                        $("<p>").text(comentario.Texto).appendTo(bloque);
+                        if (!isNaN(fecha.getTime())) {
+                            $("<small>").text(fecha.toLocaleDateString()).appendTo(bloque);
+
+                        }
+                        $("#lista_Comns").append(bloque);
+
+                    });
+
+                },
+                error: function (xhr) {
+                    if (xhr.status === 401) {
+                        $("#mensaje_coms").text("Estimado usuario, su su sesión ha expirado. Debe iniciar sesión nuevamente.");
+                    } else if (xhr.status === 403) {
+                        $("#mensaje_coms").text("No puede consultar este ticket");
+
+                    } else {
+                        $("#mensaje_coms").text("No se logró completar la operación para cargar los comentarios, intentelo nuevamente.");
+                    }
+                }
+
+            });
+
+        });
+
+        $("#cancelar_coms").on("click", function () {
+            $("#apartado_comentarios").hide();
+            $("#lista_Coms").empty();
+            $("#mensaje_coms").text("");
+            $("#Formulario_cometarios")[0].reset();
+            $("#Id_CT_seleccionado").val("");
+
+        });
+
+        $("#Formulario_cometarios").on("submit", function (e) {
+            e.preventDefault();
+            var idTicket = $("#Id_CT_seleccionado").val();
+            var texto = $("#TextoComentario").val().trim();
+            var mensaje = $("#mensaje_coms");
+
+            if (!idTicket || !texto)
+            {
+                mensaje.text("Debe seleccionar un ticket");
+                return;
+
+            }
+
+            $.ajax({
+                url: '@Url.Action("registrar_comentario", "Logica_Tickets")',
+                type: "POST",
+                data: {
+                    Id_Ticket: idTicket, Texto: texto, __RequestVerificationToken: $("#Formulario_cometarios input[name='__RequestVerificationToken']").val()
+                },
+                success: function (respuesta) {
+                    mensaje.text(respuesta.mensaje);
+                    if (respuesta.exito) { 
+                        $("#TextoComentario").val("");
+                        $(".btnComentarios[data-id='" + idTicket + "']").trigger("click");
+                    }
+                },
+                error: function (xhr) {
+                    if (xhr.status === 401) {
+                        mensaje.text("Estimado usuario, su solicitud no es válida.");
+                    } else if (xhr.status === 403) {
+                        mensaje.text("Estimado usuario, su su sesión ha expirado. Debe iniciar sesión nuevamente");
+
+                    } else {
+                        mensaje.text("No se logró completar la operación, intentelo nuevamente.");
+                    }
+                }
+
+
+            });
+        });
+
+
+
+    </script>
+    }
+
