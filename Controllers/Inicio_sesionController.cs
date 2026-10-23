@@ -45,7 +45,7 @@ namespace Proyecto_1_Ericka_Morales_Q.Controllers
             if (usuario.Rol == "Administrador") 
             {
 
-                return RedirectToAction("Index", "Logica_Tickets");
+                return RedirectToAction("Index", "Admin");
             
             }
 

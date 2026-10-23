@@ -1,0 +1,60 @@
+﻿
+@model List<Proyecto_1_Ericka_Morales_Q.Models.Tickets>
+
+@{
+    ViewBag.Title = "Administración de tickets";
+}
+
+<main>
+    <div class="container mt-4">
+        <h2>Administración de tickets</h2>
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Título</th>
+                        <th>Descripción</th>
+                        <th>Usuario solicitante</th>
+                        <th>Categoría</th>
+                        <th>Fecha de creación</th>
+                        <th>ID del estado</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla_T">
+                    @if (Model != null && Model.Count > 0)
+                    {
+                        foreach (var ticket in Model)
+                        {
+                            <tr>
+                                <td>@ticket.Id</td>
+                                <td>@ticket.Titulo</td>
+                                <td>@ticket.Descripcion</td>
+                                <td>@ticket.Nombre_Solicitante</td>
+                                <td>@ticket.Categoria</td>
+                                <td>@ticket.F_creacion.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@ticket.N_Estado</td>
+                            </tr>
+                        }
+
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center">
+                                Todavía no hay ticktes registrados
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+
+
+    </div>
+    
+
+</main>
+
+

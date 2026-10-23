@@ -11,6 +11,7 @@ namespace Proyecto_1_Ericka_Morales_Q.Models
         public string Titulo { get; set; }
         public string Descripcion { get; set; }
         public int Id_Usuario_solicitante { get; set; }
+        public string Nombre_Solicitante {  get; set; }
         public int? Id_Usuario_asigando { get; set; }
         public int Id_Estado { get; set; }
         public DateTime F_creacion { get; set; }

@@ -18,9 +18,15 @@ namespace Proyecto_1_Ericka_Morales_Q.Conexion_DB
             List<Tickets> tickets = new List<Tickets>();
             using (SqlConnection conection = conexion.DBconexion())
             {
-                string consulta_sql = @"SELECT Id, Titulo, Descripcion, IdUsuarioSolicitante, IdUsuarioAsignado, IdEstado, FechaCreacion, FechaActualizacion, Categoria
-                FROM Tickets
-                ORDER BY FechaCreacion DESC";
+                string consulta_sql =
+                    @"SELECT T.Id, T.Titulo, T.Descripcion, T.IdUsuarioSolicitante, T.IdUsuarioAsignado, T.IdEstado, T.FechaCreacion, 
+                    T.FechaActualizacion, T.Categoria, U.Nombre AS Nombre_Solicitante, E.Nombre AS NombreEstado
+                       FROM Tickets T
+                       INNER JOIN Usuarios U 
+                           ON T.IdUsuarioSolicitante = U.Id
+                        INNER JOIN EstadosTicket E
+                           ON T.IdEstado = E.Id
+                       ORDER BY T.FechaCreacion DESC";
                 using (SqlCommand ejecucion = new SqlCommand(consulta_sql, conection))
                 {
                     conection.Open();
@@ -36,8 +42,10 @@ namespace Proyecto_1_Ericka_Morales_Q.Conexion_DB
                             tickets1.Titulo = lectura["Titulo"].ToString();
                             tickets1.Descripcion = lectura["Descripcion"].ToString();
                             tickets1.Id_Usuario_solicitante = Convert.ToInt32(lectura["IdUsuarioSolicitante"]);
+                            tickets1.Nombre_Solicitante = lectura["Nombre_Solicitante"].ToString();
                             tickets1.Id_Usuario_asigando = lectura["IdUsuarioAsignado"] == DBNull.Value ? (int?)null : Convert.ToInt32(lectura["IdUsuarioAsignado"]);
                             tickets1.Id_Estado = Convert.ToInt32(lectura["IdEstado"]);
+                            tickets1.N_Estado = lectura["NombreEstado"].ToString();
                             tickets1.F_creacion = Convert.ToDateTime(lectura["FechaCreacion"]);
                             tickets1.F_actu = lectura["FechaActualizacion"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(lectura["FechaActualizacion"]);
                             tickets1.Categoria = lectura["Categoria"].ToString();

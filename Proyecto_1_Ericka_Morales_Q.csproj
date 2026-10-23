@@ -128,6 +128,7 @@
     <Compile Include="Conexion_DB\registro_coms.cs" />
     <Compile Include="Conexion_DB\registro_tickets.cs" />
     <Compile Include="Conexion_DB\registro_usuario.cs" />
+    <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\Inicio_sesionController.cs" />
     <Compile Include="Controllers\Logica_TicketsController.cs" />
@@ -196,6 +197,7 @@
     <Content Include="Views\Inicio_sesion\Inicio.cshtml" />
     <Content Include="Views\Inicio_sesion\Registro.cshtml" />
     <Content Include="Views\Logica_Tickets\Index.cshtml" />
+    <Content Include="Views\Admin\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
