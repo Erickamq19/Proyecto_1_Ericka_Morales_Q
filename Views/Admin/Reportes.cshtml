@@ -1,0 +1,109 @@
+﻿
+@model Proyecto_1_Ericka_Morales_Q.Models.Reportes
+
+@{
+    ViewBag.Title = "Administración de plataforma";
+}
+
+<main>
+    <div class="container mt-4">
+        <h2>Generación de reportes</h2>
+        @Html.AntiForgeryToken()
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Indicador</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Tickets registrados en el plataforma</td>
+                        <td id="total_tickets">@Model.T_Tickets</td>
+                    </tr>
+                    <tr>
+                        <td>Tickets abiertos</td>
+                        <td id="abiertos">@Model.T_abiertos</td>
+                    </tr>
+                    <tr>
+                        <td>Tickets en proceso</td>
+                        <td id="enproceso">@Model.T_enproceso</td>
+                    </tr>
+                    <tr>
+                        <td>Tickets resueltos</td>
+                        <td id="resueltos">@Model.T_resueltos</td>
+                    </tr>
+                    <tr>
+                        <td>Tickets Cerrados</td>
+                        <td id="cerrados">@Model.T_cerrados</td>
+                    </tr>
+                    <tr>
+                        <td>Total de usuarios registrados</td>
+                        <td id="total_usuarios">@Model.T_Usuarios</td>
+                    </tr>
+
+
+                </tbody>
+            </table>
+            <p>Fecha de consulta<span id="fecha">@Model.F_generacion.ToString("dd/MM/yyyy HH:mm")</span></p>
+            <button type="button" id="btnGenerarReporte" class="btn btn-primary">Generar reporte</button>
+            <p id="mensaje_reporte" role="status" class="mt-2"></p>
+        </div>
+
+
+    </div>
+
+
+</main>
+
+
+@section scripts{
+    <script>
+
+        ///Generar reporte.
+        $("#btnGenerarReporte").on("click", function () {
+            var boton = $(this);
+            var mensaje = $("#mensaje_reporte");
+            boton.prop("disable", true);
+            mensaje.text("Generando reportes......");
+
+            $.ajax({
+                url: '@Url.Action("Generar_R", "Admin")',
+                type: "POST",
+                data: { __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').first().val() },
+
+                success: function (respuesta) {
+                    mensaje.text(respuesta.mensaje);
+                    if (respuesta.exito) {
+                        $("#total_tickets").text(respuesta.total_t);
+                        $("#abiertos").text(respuesta.abiertos)
+                        $("#enproceso").text(respuesta.enproceso)
+                        $("#resueltos").text(respuesta.resueltos)
+                        $("#cerrados").text(respuesta.cerrados)
+                        $("#total_usuarios").text(respuesta.usuario_t)
+                    } 
+                },
+                error: function (xhr) {
+                    if (xhr.status === 401) {
+                        mensaje.text("Estimado usuario, su solicitud no es válida.");
+                    } else if (xhr.status === 403) {
+                        mensaje.text("Estimado usuario, su sesión ha expirado. Debe iniciar sesión nuevamente");
+
+                    } else {
+                        mensaje.text("No se logró completar la operación, intentelo nuevamente.");
+                    }
+                }
+
+            });
+
+        });
+
+       
+    </script>
+
+
+}
+
+
+

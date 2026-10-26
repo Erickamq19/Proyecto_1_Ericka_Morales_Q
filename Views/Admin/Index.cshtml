@@ -10,6 +10,7 @@
         <h2>Administración de tickets</h2>
         @Html.AntiForgeryToken()
     <div>
+
         <label for="Filtro">Filtrar por estado</label>
         <select id="Filtro" class="form-control">
             <option value="">Todos los estados</option>
@@ -18,7 +19,12 @@
             <option value="Cerrado">Cerrado</option>
             <option value="Resuelto">Resuelto</option>
         </select>
-
+        <br />
+        <div class="text-end mb-3">
+            <a href="@Url.Action("Reportes", "Admin")" class="btn btn-danger">Sección de reportes</a>
+        </div>
+      
+        
     </div>
         <div class="table-responsive">
             <table class="table table-striped table-bordered table-hover">

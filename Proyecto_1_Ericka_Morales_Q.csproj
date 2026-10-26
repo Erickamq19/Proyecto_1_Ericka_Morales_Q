@@ -126,6 +126,7 @@
     <Compile Include="Conexion_DB\conexion.cs" />
     <Compile Include="Conexion_DB\gestion_contrasenas.cs" />
     <Compile Include="Conexion_DB\registro_coms.cs" />
+    <Compile Include="Conexion_DB\registro_reporte.cs" />
     <Compile Include="Conexion_DB\registro_tickets.cs" />
     <Compile Include="Conexion_DB\registro_usuario.cs" />
     <Compile Include="Controllers\AdminController.cs" />
@@ -137,6 +138,7 @@
     </Compile>
     <Compile Include="Models\Comentarios.cs" />
     <Compile Include="Models\EstadosTicket.cs" />
+    <Compile Include="Models\Reportes.cs" />
     <Compile Include="Models\Tickets.cs" />
     <Compile Include="Models\Usuarios.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -198,9 +200,11 @@
     <Content Include="Views\Inicio_sesion\Registro.cshtml" />
     <Content Include="Views\Logica_Tickets\Index.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
+    <Content Include="Views\Admin\Reportes.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Reportes\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
