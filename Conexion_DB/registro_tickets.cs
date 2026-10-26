@@ -7,6 +7,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 using System.Web.Helpers;
+using System.Web.Mvc;
 
 
 namespace Proyecto_1_Ericka_Morales_Q.Conexion_DB
@@ -232,6 +233,146 @@ namespace Proyecto_1_Ericka_Morales_Q.Conexion_DB
 
             return listaT_estado;
         }
+
+        public List<SelectListItem> Administradores() 
+        { 
+            List<SelectListItem> lista_ad = new List<SelectListItem>();
+
+            using (SqlConnection conection = conexion.DBconexion())
+            {
+                string consulta_sql = @"SELECT  
+                    Id,
+                    Nombre
+                    FROM Usuarios
+                    WHERE Rol = @Rol AND Estado = 1
+                    ORDER BY Nombre";
+
+                using (SqlCommand ejecucion = new SqlCommand(consulta_sql, conection))
+                {
+                    ejecucion.Parameters.Add("@Rol", SqlDbType.NVarChar, 30).Value = "Administrador";
+                    conection.Open();
+
+                    using (SqlDataReader lectura = ejecucion.ExecuteReader())
+                    {
+                        while (lectura.Read())
+                        {
+
+                            lista_ad.Add(new SelectListItem
+                            {
+                                Value = lectura["Id"].ToString(),
+                                Text = lectura["Nombre"].ToString(),
+
+
+                            });
+
+                            
+
+                        }
+
+
+                    }
+
+
+                }
+            }
+
+            return lista_ad;
+
+
+        }
+
+
+        public List<SelectListItem> Estados()
+        {
+            List<SelectListItem> lista_estados = new List<SelectListItem>();
+
+            using (SqlConnection conection = conexion.DBconexion())
+            {
+                string consulta_sql = @"SELECT  
+                    Id,
+                    Nombre
+                    FROM EstadosTicket
+                    ORDER BY Id";
+
+                using (SqlCommand ejecucion = new SqlCommand(consulta_sql, conection))
+                {
+                    conection.Open();
+
+                    using (SqlDataReader lectura = ejecucion.ExecuteReader())
+                    {
+                        while (lectura.Read())
+                        {
+
+                            lista_estados.Add(new SelectListItem
+                            {
+                                Value = lectura["Id"].ToString(),
+                                Text = lectura["Nombre"].ToString(),
+
+
+                            });
+
+
+
+                        }
+
+
+                    }
+
+
+                }
+            }
+
+            return lista_estados;
+
+
+        }
+
+        public bool Asignacion(int Idticket, int Admin)
+        {
+            using (SqlConnection conection = conexion.DBconexion())
+            {
+                string consulta_sql = @"UPDATE Tickets 
+                    SET IdUsuarioAsignado = @IdAdministrador,
+                    FechaActualizacion = GETDATE()
+                    WHERE Id = @IdTicket";
+
+                using (SqlCommand ejecucion = new SqlCommand(consulta_sql, conection))
+                {
+
+                    ejecucion.Parameters.Add("@IdAdministrador", SqlDbType.Int).Value = Admin;
+                    ejecucion.Parameters.Add("@IdTicket", SqlDbType.Int).Value = Idticket;
+
+                    conection.Open();
+                    return ejecucion.ExecuteNonQuery() > 0;
+
+                }
+
+            }
+        }
+
+        public bool Estado(int Idticket, int IdEstado)
+        {
+            using (SqlConnection conection = conexion.DBconexion())
+            {
+                string consulta_sql = @"UPDATE Tickets 
+                    SET IdEstado = @IdEstado,
+                    FechaActualizacion = GETDATE()
+                    WHERE Id = @IdTicket";
+
+                using (SqlCommand ejecucion = new SqlCommand(consulta_sql, conection))
+                {
+
+                    ejecucion.Parameters.Add("@IdEstado", SqlDbType.Int).Value = IdEstado;
+                    ejecucion.Parameters.Add("@IdTicket", SqlDbType.Int).Value = Idticket;
+
+                    conection.Open();
+                    return ejecucion.ExecuteNonQuery() > 0;
+
+                }
+
+            }
+        }
+
 
     }
 

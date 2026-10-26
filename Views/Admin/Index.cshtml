@@ -8,6 +8,18 @@
 <main>
     <div class="container mt-4">
         <h2>Administración de tickets</h2>
+        @Html.AntiForgeryToken()
+    <div>
+        <label for="Filtro">Filtrar por estado</label>
+        <select id="Filtro" class="form-control">
+            <option value="">Todos los estados</option>
+            <option value="Abierto">Abierto</option>
+            <option value="En Proceso">En Proceso</option>
+            <option value="Cerrado">Cerrado</option>
+            <option value="Resuelto">Resuelto</option>
+        </select>
+
+    </div>
         <div class="table-responsive">
             <table class="table table-striped table-bordered table-hover">
                 <thead>
@@ -18,7 +30,9 @@
                         <th>Usuario solicitante</th>
                         <th>Categoría</th>
                         <th>Fecha de creación</th>
-                        <th>ID del estado</th>
+                        <th>Estado</th>
+                        <th>Asignación</th>
+                        <th>Marcación</th>
                     </tr>
                 </thead>
                 <tbody id="tabla_T">
@@ -26,7 +40,7 @@
                     {
                         foreach (var ticket in Model)
                         {
-                            <tr>
+                            <tr  data-estado="@ticket.N_Estado">
                                 <td>@ticket.Id</td>
                                 <td>@ticket.Titulo</td>
                                 <td>@ticket.Descripcion</td>
@@ -34,6 +48,18 @@
                                 <td>@ticket.Categoria</td>
                                 <td>@ticket.F_creacion.ToString("dd/MM/yyyy HH:mm")</td>
                                 <td>@ticket.N_Estado</td>
+                                <td>
+                                    @Html.DropDownList(
+                                   "Resposable_" + ticket.Id, new SelectList(ViewBag.Administradores, "Value", "Text",
+                                   ticket.Id_Usuario_asigando),
+                                   "Ticket sin asignar", new { @class = "form-control cmbAsignado", data_ticket_id = ticket.Id })
+                                </td>
+                                <td>
+                                    @Html.DropDownList(
+                                    "Estado_" + ticket.Id, new SelectList(ViewBag.Estados, "Value", "Text",
+                                    ticket.Id_Estado),
+                                    new { @class = "form-control cmbEstado", data_ticket_id = ticket.Id })
+                                </td>
                             </tr>
                         }
 
@@ -49,6 +75,8 @@
 
                 </tbody>
             </table>
+
+            <p id="mensaje_admin" role="status" class="mt-2"></p>
         </div>
 
 
@@ -56,5 +84,112 @@
     
 
 </main>
+
+
+@section scripts{
+    <script>
+
+        ///Asignación del administrador.
+        $(document).on("change", ".cmbAsignado", function () {
+            var combox = $(this);
+            var idTicket = combox.attr("data-ticket-id");
+            var idAdministrador = combox.val();
+            var mensaje = $("#mensaje_admin");
+
+            $.ajax({
+                url: '@Url.Action("Asignacion" , "Admin")',
+                type: "POST",
+                data: { IdTicket: idTicket, Admin: idAdministrador, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').first().val() },
+
+                success: function (respuesta) {
+                    mensaje.text(respuesta.mensaje);
+                    if (respuesta.exito) {
+                        combox.data("valor-anterior", idAdministrador);
+                    } else {
+                        combox.val(combox.data("valor-anterior") || "");
+                    }
+                },
+                error: function (xhr) {
+                    if (xhr.status === 401) {
+                        mensaje.text("Estimado usuario, su solicitud no es válida.");
+                    } else if (xhr.status === 403) {
+                        mensaje.text("Estimado usuario, su sesión ha expirado. Debe iniciar sesión nuevamente");
+
+                    } else {
+                        mensaje.text("No se logró completar la operación, intentelo nuevamente.");
+                    }
+                }
+
+            });
+
+        });
+
+        $(function () {
+            $(".cmbAsignado").each(function () {
+                $(this).data("valor-anterior", $(this).val());
+            });
+
+        });
+
+        $(document).on("change", ".cmbEstado", function () {
+            var comboxEstado = $(this);
+            var idTicket = comboxEstado.attr("data-ticket-id");
+            var idEstado = comboxEstado.val();
+            var mensaje = $("#mensaje_admin");
+            var estadoanterior = comboxEstado.data("valor-anterior");
+
+            $.ajax({
+                url: '@Url.Action("Estado", "Admin")',
+                type: "POST",
+                data: { IdTicket: idTicket, IdEstado: idEstado, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').first().val() },
+
+                success: function (respuesta) {
+                    mensaje.text(respuesta.mensaje);
+                    if (respuesta.exito) {
+                        comboxEstado.data("valor-anterior", idEstado);
+                        comboxEstado.closest("tr").children("td").eq(6).text(comboxEstado.find("option:selected").text());
+                    } else {
+                        comboxEstado.val(estadoanterior);
+                    }
+                },
+                error: function (xhr) {
+                    comboxEstado.val(estadoanterior);
+                    if (xhr.status === 401) {
+                        mensaje.text("Estimado usuario, su solicitud no es válida.");
+                    } else if (xhr.status === 403) {
+                        mensaje.text("Estimado usuario, su sesión ha expirado. Debe iniciar sesión nuevamente");
+
+                    } else {
+                        mensaje.text("No se logró completar la operación, intentelo nuevamente.");
+                    }
+                }
+
+            });
+
+        });
+
+        $(function () {
+            $(".cmbEstado").each(function () {
+                $(this).data("valor-anterior", $(this).val());
+            });
+
+        });
+
+
+        $("#Filtro").on("change", function () {
+            var estado_seleccionado = $(this).val();
+            $("#tabla_T tr[data-estado]").each(function () {
+                var estado_ticket = $(this).attr("data-estado");
+                $(this).toggle(estado_seleccionado === "" || estado_ticket === estado_seleccionado);
+            });
+        });
+
+
+
+
+    </script>
+
+    
+    }
 
 
