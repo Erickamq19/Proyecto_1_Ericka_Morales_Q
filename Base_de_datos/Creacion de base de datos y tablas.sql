@@ -92,6 +92,26 @@ CREATE TABLE dbo.Comentarios (
 );
 GO
 
+CREATE TABLE dbo.Reportes (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    IdUsuarioAdministrador INT NOT NULL,
+    FechaGeneracion DATETIME NOT NULL
+        DEFAULT GETDATE(),
+    TotalTickets INT NOT NULL,
+    TicketsAbiertos INT NOT NULL,
+    TicketsEnProceso INT NOT NULL,
+    TicketsResueltos INT NOT NULL,
+    TicketsCerrados INT NOT NULL,
+    TotalUsuarios INT NOT NULL,
+
+    CONSTRAINT FK_Reportes_Usuarios
+        FOREIGN KEY (IdUsuarioAdministrador)
+        REFERENCES dbo.Usuarios(Id),
+
+    
+);
+GO
+
 
 SELECT * FROM dbo.EstadosTicket;
 GO
